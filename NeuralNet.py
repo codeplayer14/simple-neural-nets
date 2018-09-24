@@ -41,5 +41,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 
 no_units_hidden_layer = 6 
+no_inputs = 11
 classifier = Sequential()
-classifier.add(Dense(no_units_hidden_layer,init='uniform',activation='relu'))
+classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu',input_dim=no_inputs))
+classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu'))
+classifier.add(Dense(1,kernel_initializer='uniform',activation='sigmoid'))
