@@ -61,3 +61,17 @@ y_pred = classifier.predict(X_test)
 y_pred = (y_pred > 0.5)
 from sklearn.metrics import confusion_matrix
 cm  = confusion_matrix(y_test,y_pred)
+
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+
+def build_classifier():
+    classifier = Sequential()
+    classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu'))
+    classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu'))    
+    classifier.add(Dense(1,kernel_initializer='uniform',activation='sigmoid'))
+    classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+    return classifier
+
+classifer = KerasClassifier(build_fn=build_classifier,batch_size=batch_size,epochs = number_epochs)
+accuracies = cross_val_score( estimator= classifer,X=X_train,y=y_train,cv=10,n_jobs=-1)
