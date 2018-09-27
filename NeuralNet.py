@@ -64,14 +64,25 @@ cm  = confusion_matrix(y_test,y_pred)
 
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
-
-def build_classifier():
+from sklearn.model_selection import GridSearchCV
+def build_classifier(optimizer):
     classifier = Sequential()
     classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu'))
     classifier.add(Dense(no_units_hidden_layer,kernel_initializer='uniform',activation='relu'))    
     classifier.add(Dense(1,kernel_initializer='uniform',activation='sigmoid'))
-    classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+    classifier.compile(optimizer=optimizer,loss='binary_crossentropy',metrics=['accuracy'])
     return classifier
 
-classifer = KerasClassifier(build_fn=build_classifier,batch_size=batch_size,epochs = number_epochs)
-accuracies = cross_val_score( estimator= classifer,X=X_train,y=y_train,cv=10,n_jobs=-1)
+classifier = KerasClassifier(build_fn=build_classifier,batch_size=batch_size,epochs = number_epochs)
+accuracies = cross_val_score( estimator= classifier,X=X_train,y=y_train,cv=10,n_jobs=-1)
+
+parameters = {'batch_size':[25,32],
+              'nb_epoch':[100,50],
+              'optimizer':['adam','rmsprop']}
+
+grid_search = GridSearchCV(estimator=classifier,param_grid=parameters,
+                           scoring=['accuracy'],cv=10)
+
+grid_search = grid_search.fit(X_train,y_train)
+best_parameters  = grid_search.best_params_
+best_accuracy = grid_search.best_score_
